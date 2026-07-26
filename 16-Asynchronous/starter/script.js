@@ -1,11 +1,13 @@
 'use strict';
 
+const token = 'rc_live_d324866a6ef74a52a312bbed3af91888';
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
 // NEW COUNTRIES API URL (use instead of the URL shown in videos):
 // https://restcountries.com/v2/name/portugal
 
+/*
 function getCountryData(country) {
   const request = new XMLHttpRequest();
   request.onload = function () {
@@ -50,10 +52,11 @@ function getCountryData(country) {
   );
   request.setRequestHeader(
     'Authorization',
-    'Bearer rc_live_d324866a6ef74a52a312bbed3af91888',
+    `Bearer ${token}`,
   );
   request.send();
 }
+*/
 
 function renderCountry(data) {
   console.log('Data received:', data);
@@ -73,6 +76,7 @@ function renderCountry(data) {
   countriesContainer.style.opacity = 1;
 }
 
+/*
 function getCountryAndNeighbour(country) {
   const request = new XMLHttpRequest();
   request.addEventListener('load', function () {
@@ -109,13 +113,26 @@ function getCountryAndNeighbour(country) {
   );
   request.send();
 }
+*/
 
 // getCountryData('PT');
 // getCountryData('US');
 // getCountryData('DE');
-getCountryAndNeighbour('PT');
+// getCountryAndNeighbour('PT');
 
 // NEW REVERSE GEOCODING API URL (use instead of the URL shown in videos):
 // https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}
 
 ///////////////////////////////////////
+
+function fetchCountryData(country) {
+  fetch(`https://api.restcountries.com/countries/v5/codes.alpha_2/${country}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then(response =>
+    response.json().then(data => renderCountry(data.data.objects[0])),
+  );
+}
+
+fetchCountryData('PT');
