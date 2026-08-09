@@ -58,10 +58,9 @@ function getCountryData(country) {
 }
 */
 
-function renderCountry(data) {
-  console.log('Data received:', data);
+function renderCountry(data, classname = '') {
   const html = `
-    <article class="country">
+    <article class="country ${classname}">
         <img class="country__img" src="${data.flag.url_svg}"/>
         <div class="country__data">
         <h3 class="country__name">${data.names.common}</h3>
@@ -72,8 +71,14 @@ function renderCountry(data) {
         </div>
     </article>
   `;
-  countriesContainer.insertAdjacentHTML('beforeend', html);
-  countriesContainer.style.opacity = 1;
+  countriesContainer.insertAdjacentHTML('beforeEnd', html);
+}
+
+function renderError(error) {
+  countriesContainer.insertAdjacentText(
+    'beforeend',
+    `Something went wrong: ${error}`,
+  );
 }
 
 /*
@@ -125,14 +130,38 @@ function getCountryAndNeighbour(country) {
 
 ///////////////////////////////////////
 
-function fetchCountryData(country) {
-  fetch(`https://api.restcountries.com/countries/v5/codes.alpha_2/${country}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+function fetchCountryByCode(code, error = 'Something went wrong :(') {
+  const codeType = `alpha_${code.length}`;
+
+  return fetch(
+    `https://api.restcountries.com/countries/v5/codes.${codeType}/${code}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  }).then(response =>
-    response.json().then(data => renderCountry(data.data.objects[0])),
-  );
+  ).then(response => {
+    if (!response.ok) {
+      throw new Error(`${error} (${response.status})`);
+    }
+    return response.json();
+  });
 }
 
-fetchCountryData('PT');
+function fetchCountryData(country) {
+  fetchCountryByCode(country)
+    .then(data => {
+      const neighbour = data.data.objects?.[0];
+      renderCountry(neighbour);
+      console.log(neighbour);
+      return neighbour;
+    })
+    .then(data => fetchCountryByCode(data.borders?.[0]))
+    .then(data => renderCountry(data.data.objects?.[0], 'neighbour'))
+    .catch(reject => renderError(reject))
+    .finally((countriesContainer.style.opacity = 1));
+}
+
+btn.addEventListener('click', function () {
+  fetchCountryData('PT');
+});
