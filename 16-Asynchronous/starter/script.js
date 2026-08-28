@@ -163,5 +163,27 @@ function fetchCountryData(country) {
 }
 
 btn.addEventListener('click', function () {
-  fetchCountryData('PT');
+  //   fetchCountryData('PT');
+  whereAmI(52.508, 13.381);
+  whereAmI(19.037, 72.873);
+  whereAmI(-33.933, 18.474);
+  whereAmI(42.48721344350255, 27.481978838106198);
 });
+
+function whereAmI(lat, lon) {
+  const result = fetch(
+    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}`,
+  )
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`*shrug* (${response.status})`);
+      }
+      return response.json();
+    })
+    // .then(data => fetchCountryData(data.countryCode));
+    .then(data => {
+      console.log(data);
+      console.log(`You are in ${data.city}, ${data.countryName}`);
+    })
+    .catch(reject => renderError(reject));
+}
