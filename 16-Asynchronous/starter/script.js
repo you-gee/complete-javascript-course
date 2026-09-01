@@ -164,16 +164,28 @@ function fetchCountryData(country) {
 
 btn.addEventListener('click', function () {
   //   fetchCountryData('PT');
-  whereAmI(52.508, 13.381);
-  whereAmI(19.037, 72.873);
-  whereAmI(-33.933, 18.474);
-  whereAmI(42.48721344350255, 27.481978838106198);
+  // whereAmI(52.508, 13.381);
+  // whereAmI(19.037, 72.873);
+  // whereAmI(-33.933, 18.474);
+  // whereAmI(42.48721344350255, 27.481978838106198);
+  whereAmI();
 });
 
-function whereAmI(lat, lon) {
-  const result = fetch(
-    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}`,
-  )
+function getPosition() {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+}
+
+function whereAmI() {
+  getPosition()
+    .then(location => {
+      console.log(location);
+      const { latitude: lat, longitude: lon } = location.coords;
+      return fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}`,
+      );
+    })
     .then(response => {
       if (!response.ok) {
         throw new Error(`*shrug* (${response.status})`);
@@ -184,6 +196,39 @@ function whereAmI(lat, lon) {
     .then(data => {
       console.log(data);
       console.log(`You are in ${data.city}, ${data.countryName}`);
+      fetchCountryData(data.countryCode);
     })
     .catch(reject => renderError(reject));
 }
+
+const images = document.querySelector('.images');
+
+const createImage = imgPath => {
+  return new Promise((resolve, reject) => {
+    const image = document.createElement('img');
+
+    image.addEventListener('load', () => {
+      images.appendChild(image);
+      resolve(image);
+    });
+
+    image.addEventListener('error', () =>
+      reject(new Error(`Couldn't resolve the image.`)),
+    );
+
+    image.src = imgPath;
+  });
+};
+
+const wait = seconds =>
+  new Promise(resolve => {
+    setTimeout(resolve, seconds * 1000);
+  });
+
+createImage('img/img-1.jpg')
+  .then(img => wait(2).then(() => (img.style.display = 'none')))
+  .then(() => createImage('img/img-2.jpg'))
+  .then(img => wait(2).then(() => (img.style.display = 'none')))
+  .then(() => createImage('img/img-3.jpg'))
+  .then(img => wait(2).then(() => (img.style.display = 'none')))
+  .catch(reject => console.error(`WTF dude? No image? ${reject}`));
