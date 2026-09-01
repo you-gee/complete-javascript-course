@@ -232,3 +232,24 @@ createImage('img/img-1.jpg')
   .then(() => createImage('img/img-3.jpg'))
   .then(img => wait(2).then(() => (img.style.display = 'none')))
   .catch(reject => console.error(`WTF dude? No image? ${reject}`));
+
+// update whereAmI function to async/await
+
+const whereAmIAsyncAwait = async () => {
+  const position = await getPosition();
+  console.log('position: ', position);
+  const { latitude: lat, longitude: lon } = position.coords;
+  const location = await fetch(
+    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}`,
+  );
+  console.log('location: ', location);
+  const locationData = await location.json();
+  console.log('locationData: ', locationData);
+
+  console.log(`You are in ${locationData.city}, ${locationData.countryName}`);
+  fetchCountryData(locationData.countryCode);
+
+  // .catch(reject => renderError(reject));
+};
+
+whereAmIAsyncAwait();
