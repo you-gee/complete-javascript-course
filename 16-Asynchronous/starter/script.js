@@ -149,26 +149,34 @@ function fetchCountryByCode(code, error = 'Something went wrong :(') {
 }
 
 function fetchCountryData(country) {
-  fetchCountryByCode(country)
+  return fetchCountryByCode(country)
     .then(data => {
       const neighbour = data.data.objects?.[0];
+
+      if (!neighbour) throw new Error('Country not found');
+
       renderCountry(neighbour);
-      console.log(neighbour);
-      return neighbour;
+      return neighbour.borders?.[0];
     })
-    .then(data => fetchCountryByCode(data.borders?.[0]))
-    .then(data => renderCountry(data.data.objects?.[0], 'neighbour'))
+    .then(neighbourCode => {
+      if (!neighbourCode) return;
+      return fetchCountryByCode(neighbourCode);
+    })
+    .then(data => {
+      if (data) renderCountry(data.data.objects?.[0], 'neighbour');
+    })
     .catch(reject => renderError(reject))
-    .finally((countriesContainer.style.opacity = 1));
+    .finally(() => (countriesContainer.style.opacity = 1));
 }
 
 btn.addEventListener('click', function () {
-  //   fetchCountryData('PT');
+  // fetchCountryData('PT');
   // whereAmI(52.508, 13.381);
   // whereAmI(19.037, 72.873);
   // whereAmI(-33.933, 18.474);
   // whereAmI(42.48721344350255, 27.481978838106198);
-  whereAmI();
+  // whereAmI();
+  whereAmIAsyncAwait().catch(error => console.error(error));
 });
 
 function getPosition() {
@@ -196,7 +204,7 @@ function whereAmI() {
     .then(data => {
       console.log(data);
       console.log(`You are in ${data.city}, ${data.countryName}`);
-      fetchCountryData(data.countryCode);
+      return fetchCountryData(data.countryCode);
     })
     .catch(reject => renderError(reject));
 }
@@ -224,7 +232,8 @@ const wait = seconds =>
   new Promise(resolve => {
     setTimeout(resolve, seconds * 1000);
   });
-/* 
+
+/*
 createImage('img/img-1.jpg')
   .then(img => wait(2).then(() => (img.style.display = 'none')))
   .then(() => createImage('img/img-2.jpg'))
@@ -232,46 +241,28 @@ createImage('img/img-1.jpg')
   .then(() => createImage('img/img-3.jpg'))
   .then(img => wait(2).then(() => (img.style.display = 'none')))
   .catch(reject => console.error(`WTF dude? No image? ${reject}`));
- */
+*/
+
 // update whereAmI function to async/await
 
 const whereAmIAsyncAwait = async () => {
-  const position = await getPosition();
-  console.log('position: ', position);
-  const { latitude: lat, longitude: lon } = position.coords;
-  const location = await fetch(
-    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}`,
-  );
-  console.log('location: ', location);
-  const locationData = await location.json();
-  console.log('locationData: ', locationData);
+  try {
+    const position = await getPosition();
+    const { latitude: lat, longitude: lon } = position.coords;
+    const location = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}`,
+    );
 
-  console.log(`You are in ${locationData.city}, ${locationData.countryName}`);
-  fetchCountryData(locationData.countryCode);
+    const locationData = await location.json();
 
-  // .catch(reject => renderError(reject));
+    await fetchCountryData(locationData.countryCode);
+
+    return `You are in ${locationData.city}, ${locationData.countryName}`;
+  } catch (error) {
+    renderError(error);
+    throw error;
+  }
 };
-
-// whereAmIAsyncAwait();
-
-// Coding Challenge #3
-
-/* 
-PART 1
-Write an async function 'loadNPause' that recreates Coding Challenge #2, this time using async/await (only the part where the promise is consumed). Compare the two versions, think about the big differences, and see which one you like more.
-Don't forget to test the error handler, and to set the network speed to 'Fast 3G' in the dev tools Network tab.
-
-PART 2
-1. Create an async function 'loadAll' that receives an array of image paths 'imgArr';
-2. Use .map to loop over the array, to load all the images with the 'createImage' function (call the resulting array 'imgs')
-3. Check out the 'imgs' array in the console! Is it like you expected?
-4. Use a promise combinator function to actually get the images from the array 😉
-5. Add the 'paralell' class to all the images (it has some CSS styles).
-
-TEST DATA: ['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg']. To test, turn off the 'loadNPause' function.
-
-GOOD LUCK 😀
-*/
 
 const loadNPause = async imgPath => {
   try {
@@ -287,7 +278,12 @@ const loadNPause = async imgPath => {
 // loadNPause('img/img-1.jpg');
 
 const loadAll = async imgArr => {
-  imgArr.map(image => loadNPause(image));
+  try {
+    const loadedImages = await Promise.all(imgArr.map(createImage));
+    loadedImages.forEach(img => img.classList.add('parallel'));
+  } catch (error) {
+    console.error(`WTF dude? No image? ${error}`);
+  }
 };
 
 const imgs = ['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg'];
