@@ -1,0 +1,15 @@
+{
+  "name": "18-forkify",
+  "version": "1.0.0",
+  "description": "Creating full project",
+  "scripts": {
+    "start": "parcel starter/index.html",
+    "build": "parcel build starter/index.html"
+  },
+  "author": "Eugene Voronko",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.16.4",
+    "parcel": "^2.16.4"
+  }
+}
