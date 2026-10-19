@@ -1,4 +1,5 @@
-import async from 'regenerator-runtime';
+import { API_URL } from './config';
+import { getJSON } from './helpers';
 
 export const state = {
   recipe: {},
@@ -6,16 +7,7 @@ export const state = {
 
 export const fetchRecipe = async function (recipeID) {
   try {
-    const res = await fetch(
-      `https://forkify-api.jonas.io/api/v2/recipes/${recipeID}`,
-    );
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(`${data.message} (${res.status})`);
-    }
-
-    console.log(res, data);
+    const data = await getJSON(`${API_URL}${recipeID}`);
 
     const recipe = data.data.recipe;
     state.recipe = {
@@ -30,6 +22,6 @@ export const fetchRecipe = async function (recipeID) {
     };
     console.log(state.recipe);
   } catch (error) {
-    alert(error);
+    console.error(`CUSTOM ERROR: ${error}`);
   }
 };
