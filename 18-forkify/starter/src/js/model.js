@@ -22,6 +22,6 @@ export const fetchRecipe = async function (recipeID) {
     };
     console.log(state.recipe);
   } catch (error) {
-    console.error(`CUSTOM ERROR: ${error}`);
+    throw error;
   }
 };
