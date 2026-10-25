@@ -63,9 +63,11 @@ class RecipeView {
     this.#parentElement.insertAdjacentHTML('afterbegin', html);
   }
 
-  addRenderHandler(handler) {
+  addRenderHandler(handlerFunction) {
     const hashEvents = ['hashchange', 'load'];
-    hashEvents.forEach(event => window.addEventListener(event, handler));
+    hashEvents.forEach(event =>
+      window.addEventListener(event, handlerFunction),
+    );
   }
 
   #generateIngredientMarkup(ingredient) {
@@ -86,7 +88,7 @@ class RecipeView {
   #generateMarkup() {
     return `
         <figure class="recipe__fig">
-          <img src="${this.#data.imageUrl}" alt="${this.#data.title}" class="recipe__img" />
+          <img src="${this.#data.image}" alt="${this.#data.title}" class="recipe__img" />
           <h1 class="recipe__title">
             <span>${this.#data.title}</span>
           </h1>
