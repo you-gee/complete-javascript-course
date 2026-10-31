@@ -8,7 +8,6 @@ export default class View {
   }
 
   render(data) {
-    console.log(data);
     if (!data || data.length === 0) {
       return this.renderError();
     }
