@@ -40,7 +40,10 @@ const controlSearchResults = async function () {
   }
 };
 
-const controlPagination = async function () {};
+const controlPagination = function (goToPage) {
+  resultsView.render(model.getSearchResultsPage(goToPage));
+  paginationView.render(model.state.search);
+};
 
 const init = () => {
   recipeView.addRenderHandler(controlRecipes);

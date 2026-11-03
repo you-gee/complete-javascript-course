@@ -5,38 +5,56 @@ class PaginationView extends View {
   _parentElement = document.querySelector('.pagination');
 
   _generateMarkup() {
-    console.log(this._data);
     const pagesAmount = Math.ceil(
       this._data.results.length / this._data.resultsPerPage,
     );
-    console.log(pagesAmount);
+    const currentPage = this._data.page;
 
-    
+    // Less results than max amount on page
+    if (pagesAmount <= 1 || currentPage > pagesAmount) {
+      return '';
+    }
+
+    // First page with 1+ result pages
+    if (currentPage === 1 && pagesAmount > currentPage) {
+      return this._generatePageButton(currentPage + 1, 'next');
+    }
+
+    // Last page with only '< Page #'
+    if (currentPage === pagesAmount) {
+      return this._generatePageButton(currentPage - 1, 'prev');
+    }
+
+    // Other pages
+    if (currentPage < pagesAmount) {
+      return (
+        this._generatePageButton(currentPage - 1, 'prev') +
+        this._generatePageButton(currentPage + 1, 'next')
+      );
+    }
   }
 
-  generatePreviousPageButton() {
+  _generatePageButton(page, direction) {
+    const icon = direction === 'prev' ? 'arrow-left' : 'arrow-right';
+
     return `
-        <button class="btn--inline pagination__btn--prev">
-        <svg class="search__icon">
-            <use href="${icons}#icon-arrow-left"></use>
-        </svg>
-        <span>Page ${this._data.page - 1}</span>
-        </button>;
-    `;
+    <button class="btn--inline pagination__btn--${direction}" data-goto="${page}">
+      ${direction === 'prev' ? `<svg class="search__icon"><use href="${icons}#icon-${icon}"></use></svg>` : ''}
+      <span>Page ${page}</span>
+      ${direction === 'next' ? `<svg class="search__icon"><use href="${icons}#icon-${icon}"></use></svg>` : ''}
+    </button>
+  `;
   }
 
-  generateNextPageButton() {
-    return `
-        <buttontton class="btn--inline pagination__btn--next">
-            <span>Page ${this._data.page + 1}</span>
-            <svg class="search__icon">
-                <use href="${icons}#icon-arrow-right"></use>
-            </svg>
-        </buttontton>
-    `;
-  }
+  addPaginationHandler(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--inline');
+      if (!btn) return;
 
-  addPaginationHandler() {}
+      const goToPage = +btn.dataset.goto;
+      handler(goToPage);
+    });
+  }
 }
 
 export default new PaginationView();
