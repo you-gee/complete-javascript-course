@@ -10,9 +10,11 @@ class ResultsView extends View {
   }
 
   #generateMarkupSearchResult(li) {
+    const recipeID = window.location.hash.slice(1);
+
     return `
         <li class="preview">
-            <a class="preview__link" href="#${li.id}">
+            <a class="preview__link ${li.id === recipeID ? 'preview__link--active' : ''}" href="#${li.id}">
             <figure class="preview__fig">
                 <img src="${li.image}" alt="${li.title}" />
             </figure>
