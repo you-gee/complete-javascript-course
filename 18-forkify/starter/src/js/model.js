@@ -27,7 +27,14 @@ export const fetchRecipe = async function (recipeID) {
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients,
     };
+
+    if (state.bookmarks.some(bookmark => bookmark.id === recipeID)) {
+      state.recipe.bookmarked = true;
+    } else {
+      state.recipe.bookmarked = false;
+    }
   } catch (error) {
+    console.error(error);
     throw error;
   }
 };
@@ -76,5 +83,13 @@ export const addBookmark = function (recipe) {
 
   if (recipe.id === state.recipe.id) {
     state.recipe.bookmarked = true;
+  }
+};
+
+export const removeBookmark = function (id) {
+  const index = state.bookmarks.findIndex(bookmark => bookmark.id === id);
+  state.bookmarks.splice(index, 1);
+  if (state.recipe.id === id) {
+    state.recipe.bookmarked = false;
   }
 };
