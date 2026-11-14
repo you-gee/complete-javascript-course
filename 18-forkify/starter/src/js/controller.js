@@ -5,6 +5,7 @@ import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
 import paginationView from './views/paginationView.js';
+import bookmarksView from './views/bookmarksView.js';
 
 const controlRecipes = async function () {
   try {
@@ -13,11 +14,9 @@ const controlRecipes = async function () {
     if (!recipeID) return;
 
     recipeView.renderSpinner();
-
     resultsView.update(model.getCurrentPageSearchResults());
-
+    bookmarksView.update(model.state.bookmarks);
     await model.fetchRecipe(recipeID);
-
     recipeView.render(model.state.recipe);
   } catch (err) {
     recipeView.renderError();
@@ -59,6 +58,7 @@ const controlToggleBookmark = function () {
     model.removeBookmark(model.state.recipe.id);
   }
   recipeView.update(model.state.recipe);
+  bookmarksView.render(model.state.bookmarks);
 };
 
 const init = () => {
