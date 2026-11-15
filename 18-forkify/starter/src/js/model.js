@@ -107,5 +107,4 @@ export const removeBookmark = function (id) {
   if (storage) {
     state.bookmarks = JSON.parse(storage);
   }
-  console.log(state.bookmarks);
 })();
