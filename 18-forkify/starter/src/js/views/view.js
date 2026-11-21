@@ -59,7 +59,7 @@ export default class View {
         </svg>
       </div>
       <p>${message}</p>
-    </div>;
+    </div>
     `;
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
@@ -74,7 +74,7 @@ export default class View {
         </svg>
       </div>
       <p>${message}</p>
-    </div>;
+    </div>
     `;
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
