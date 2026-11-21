@@ -1,5 +1,5 @@
-import { API_URL, RESULTS_PER_PAGE } from './config';
-import { getJSON } from './helpers';
+import { API_URL, RESULTS_PER_PAGE, API_KEY } from './config';
+import { getJSON, sendJSON } from './helpers';
 
 export const state = {
   recipe: {},
@@ -33,6 +33,8 @@ export const fetchRecipe = async function (recipeID) {
     } else {
       state.recipe.bookmarked = false;
     }
+
+    console.log('Recipe: ', recipe);
   } catch (error) {
     console.error(error);
     throw error;
@@ -100,6 +102,43 @@ export const removeBookmark = function (id) {
   }
 
   persistBookmarks();
+};
+
+export const uploadRecipe = async function (newRecipe) {
+  try {
+    const ingredients = Object.entries(newRecipe)
+      .filter(entry => {
+        return entry[0].startsWith('ingredient') && entry[1] !== '';
+      })
+      .map(ingredient => {
+        const ingredientArray = ingredient[1]
+          .trim()
+          .replaceAll(' ', '')
+          .split(',');
+        if (ingredientArray.length !== 3) {
+          throw new Error('Please use correct ingredient format.');
+        }
+        const [quantity, unit, description] = ingredientArray;
+
+        return { quantity: quantity ? +quantity : null, unit, description };
+      });
+
+    const recipe = {
+      cooking_time: +newRecipe.cookingTime,
+      image_url: newRecipe.image,
+      ingredients,
+      publisher: newRecipe.publisher,
+      servings: +newRecipe.servings,
+      source_url: newRecipe.sourceUrl,
+      title: newRecipe.title,
+    };
+    console.log('Recipe to upload: ', recipe);
+
+    const response = await sendJSON(`${API_URL}?key=${API_KEY}`, recipe);
+    console.log(`${API_URL}?key=${API_KEY}`, recipe);
+  } catch (error) {
+    throw error;
+  }
 };
 
 (function () {

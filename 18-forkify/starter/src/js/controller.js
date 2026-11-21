@@ -7,6 +7,7 @@ import resultsView from './views/resultsView.js';
 import paginationView from './views/paginationView.js';
 import bookmarksView from './views/bookmarksView.js';
 import addRecipeView from './views/addRecipeView.js';
+import previewView from './views/previewView.js';
 
 const controlRecipes = async function () {
   try {
@@ -21,7 +22,7 @@ const controlRecipes = async function () {
     recipeView.render(model.state.recipe);
   } catch (error) {
     console.error(error);
-    recipeView.renderError();
+    recipeView.renderError(error.message);
   }
 };
 
@@ -67,10 +68,13 @@ const controlBookmarks = function () {
   bookmarksView.render(model.state.bookmarks);
 };
 
-const controlAddRecipe = function (newRecipe) {
-  console.log(newRecipe);
-
-  // Upload new recipe data
+const controlAddRecipe = async function (newRecipe) {
+  try {
+    await model.uploadRecipe(newRecipe);
+  } catch (error) {
+    console.error('CUSTOM ERROR: ', error);
+    previewView.renderError(error.message);
+  }
 };
 
 const init = () => {

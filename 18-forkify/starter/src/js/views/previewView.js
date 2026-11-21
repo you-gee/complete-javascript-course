@@ -1,7 +1,8 @@
 import View from './view';
 
 class PreviewView extends View {
-  _parentElement = '';
+  _parentElement = document.querySelector('.upload');
+  _errorMessage = 'previeView error message';
 
   _generateMarkup() {
     const recipeID = window.location.hash.slice(1);
