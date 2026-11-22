@@ -140,6 +140,7 @@ const init = () => {
   searchView.addSearchHandler(controlSearchResults);
   paginationView.addPaginationHandler(controlPagination);
   addRecipeView.addUploadHandler(controlAddRecipe);
+  console.log('Welcome to the app :)');
 };
 
 init();

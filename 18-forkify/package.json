@@ -4,7 +4,7 @@
   "description": "Creating full project",
   "scripts": {
     "start": "parcel starter/index.html",
-    "build": "parcel build starter/index.html"
+    "build": "parcel build starter/index.html --dist-dir ./dist --no-optimize"
   },
   "author": "Eugene Voronko",
   "license": "ISC",
