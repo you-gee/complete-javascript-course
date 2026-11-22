@@ -1,6 +1,11 @@
 import View from './view';
 import icons from 'url:../../img/icons.svg';
 
+/**
+ * Compact recipe-preview view used in search and bookmark lists.
+ *
+ * @extends View
+ */
 class PreviewView extends View {
   _parentElement = document.querySelector('.upload');
   _errorMessage = 'previeView error message';

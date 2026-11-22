@@ -1,11 +1,22 @@
 import icons from 'url:../../img/icons.svg';
 import { Fraction } from 'fraction.js';
 import View from './view';
+/**
+ * Detailed recipe view.
+ *
+ * @extends View
+ */
 class RecipeView extends View {
   _parentElement = document.querySelector('.recipe');
   _errorMessage = `We couldn't find that recipe. Please try again!`;
   _message = '';
 
+  /**
+   * Registers handlers for initial load and URL hash changes.
+   *
+   * @param {Function} handlerFunction Callback invoked to render a recipe.
+   * @returns {void}
+   */
   addRenderHandler(handlerFunction) {
     const hashEvents = ['hashchange', 'load'];
     hashEvents.forEach(event =>
@@ -13,6 +24,12 @@ class RecipeView extends View {
     );
   }
 
+  /**
+   * Registers the recipe serving-adjustment handler.
+   *
+   * @param {Function} handler Callback receiving the new positive serving amount.
+   * @returns {void}
+   */
   addServingsHandler(handler) {
     this._parentElement.addEventListener('click', function (e) {
       const btn = e.target.closest('.btn--update-servings');
@@ -26,6 +43,12 @@ class RecipeView extends View {
     });
   }
 
+  /**
+   * Registers the bookmark button handler.
+   *
+   * @param {Function} handler Callback invoked when the bookmark button is clicked.
+   * @returns {void}
+   */
   addBookmarkHandler(handler) {
     this._parentElement.addEventListener('click', function (e) {
       const btn = e.target.closest('.btn--bookmark');

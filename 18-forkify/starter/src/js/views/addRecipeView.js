@@ -1,5 +1,10 @@
 import View from './view';
 
+/**
+ * Add-recipe modal view.
+ *
+ * @extends View
+ */
 class AddRecipeView extends View {
   _parentElement = document.querySelector('.upload');
   _message = 'Recipe was successfully uploaded :)';
@@ -14,6 +19,11 @@ class AddRecipeView extends View {
     this._addToggleWindowHanlder();
   }
 
+  /**
+   * Toggles the modal and overlay visibility.
+   *
+   * @returns {void}
+   */
   toggleWindow() {
     this._overlay.classList.toggle('hidden');
     this._window.classList.toggle('hidden');
@@ -31,6 +41,12 @@ class AddRecipeView extends View {
     this._overlay.addEventListener('click', this.toggleWindow.bind(this));
   }
 
+  /**
+   * Registers the recipe form submit handler.
+   *
+   * @param {Function} handler Callback receiving the normalized form data.
+   * @returns {void}
+   */
   addUploadHandler(handler) {
     this._parentElement.addEventListener('submit', function (e) {
       e.preventDefault();

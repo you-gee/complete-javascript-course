@@ -9,6 +9,17 @@ import bookmarksView from './views/bookmarksView.js';
 import addRecipeView from './views/addRecipeView.js';
 import { MODAL_CLOSE_TIME_SEC } from './config.js';
 
+/**
+ * Application controller that connects views with the data model.
+ *
+ * @module controller
+ */
+
+/**
+ * Loads and renders the recipe identified in the URL hash.
+ *
+ * @returns {Promise<void>}
+ */
 const controlRecipes = async function () {
   try {
     const recipeID = window.location.hash.slice(1);
@@ -26,6 +37,11 @@ const controlRecipes = async function () {
   }
 };
 
+/**
+ * Executes the current search and renders the first page of results.
+ *
+ * @returns {Promise<void>}
+ */
 const controlSearchResults = async function () {
   try {
     const query = searchView.getQuery();
@@ -44,16 +60,33 @@ const controlSearchResults = async function () {
   }
 };
 
+/**
+ * Renders search results for a requested page.
+ *
+ * @param {number} goToPage Page number to display.
+ * @returns {void}
+ */
 const controlPagination = function (goToPage) {
   resultsView.render(model.getCurrentPageSearchResults(goToPage));
   paginationView.render(model.state.search);
 };
 
+/**
+ * Updates ingredient quantities for a new serving count.
+ *
+ * @param {number} newServingAmount Desired number of servings.
+ * @returns {void}
+ */
 const controlServings = function (newServingAmount) {
   model.updateServings(newServingAmount);
   recipeView.update(model.state.recipe);
 };
 
+/**
+ * Toggles the current recipe bookmark and refreshes bookmark views.
+ *
+ * @returns {void}
+ */
 const controlToggleBookmark = function () {
   if (!model.state.recipe.bookmarked) {
     model.addBookmark(model.state.recipe);
@@ -64,10 +97,21 @@ const controlToggleBookmark = function () {
   bookmarksView.render(model.state.bookmarks);
 };
 
+/**
+ * Renders the list of saved bookmarks.
+ *
+ * @returns {void}
+ */
 const controlBookmarks = function () {
   bookmarksView.render(model.state.bookmarks);
 };
 
+/**
+ * Uploads a submitted recipe and updates the application views.
+ *
+ * @param {Object<string, string>} newRecipe Submitted form values.
+ * @returns {Promise<void>}
+ */
 const controlAddRecipe = async function (newRecipe) {
   try {
     addRecipeView.renderSpinner();
@@ -83,6 +127,11 @@ const controlAddRecipe = async function (newRecipe) {
   }
 };
 
+/**
+ * Registers all application event handlers.
+ *
+ * @returns {void}
+ */
 const init = () => {
   bookmarksView.addBookmarksHandler(controlBookmarks);
   recipeView.addRenderHandler(controlRecipes);

@@ -1,6 +1,11 @@
 import View from './view';
 import icons from 'url:../../img/icons.svg';
 
+/**
+ * Pagination controls for search result pages.
+ *
+ * @extends View
+ */
 class PaginationView extends View {
   _parentElement = document.querySelector('.pagination');
 
@@ -46,6 +51,12 @@ class PaginationView extends View {
   `;
   }
 
+  /**
+   * Registers the pagination button click handler.
+   *
+   * @param {Function} handler Callback receiving the requested page number.
+   * @returns {void}
+   */
   addPaginationHandler(handler) {
     this._parentElement.addEventListener('click', function (e) {
       const btn = e.target.closest('.btn--inline');

@@ -1,6 +1,11 @@
 import View from './view';
 import previewView from './previewView';
 
+/**
+ * Search-results list view.
+ *
+ * @extends View
+ */
 class ResultsView extends View {
   _parentElement = document.querySelector('.results');
   _errorMessage = `No recipes found for your query. Please try again!`;
