@@ -1,5 +1,5 @@
 import { API_URL, RESULTS_PER_PAGE, API_KEY } from './config';
-import { getJSON, sendJSON } from './helpers';
+import { AJAX } from './helpers';
 
 export const state = {
   recipe: {},
@@ -29,7 +29,7 @@ const createRecipeObject = function (data) {
 
 export const fetchRecipe = async function (recipeID) {
   try {
-    const data = await getJSON(`${API_URL}/${recipeID}`);
+    const data = await AJAX(`${API_URL}/${recipeID}?key=${API_KEY}`);
     state.recipe = createRecipeObject(data);
 
     if (state.bookmarks.some(bookmark => bookmark.id === recipeID)) {
@@ -47,7 +47,7 @@ export const getSearchResults = async function (query) {
   state.search.query = query;
 
   try {
-    const response = await getJSON(`${API_URL}?search=${query}`);
+    const response = await AJAX(`${API_URL}?search=${query}&key=${API_KEY}`);
 
     state.search.results = response.data.recipes.map(recipe => {
       return {
@@ -55,6 +55,7 @@ export const getSearchResults = async function (query) {
         title: recipe.title,
         publisher: recipe.publisher,
         image: recipe.image_url,
+        ...(recipe.key && { key: recipe.key }),
       };
     });
 
@@ -113,10 +114,7 @@ export const uploadRecipe = async function (newRecipe) {
         return entry[0].startsWith('ingredient') && entry[1] !== '';
       })
       .map(ingredient => {
-        const ingredientArray = ingredient[1]
-          .trim()
-          .replaceAll(' ', '')
-          .split(',');
+        const ingredientArray = ingredient[1].split(',').map(el => el.trim());
         if (ingredientArray.length !== 3) {
           throw new Error('Please use correct ingredient format.');
         }
@@ -135,7 +133,7 @@ export const uploadRecipe = async function (newRecipe) {
       title: newRecipe.title,
     };
 
-    const response = await sendJSON(`${API_URL}?key=${API_KEY}`, recipe);
+    const response = await AJAX(`${API_URL}?key=${API_KEY}`, recipe);
     state.recipe = createRecipeObject(response);
     addBookmark(state.recipe);
   } catch (error) {

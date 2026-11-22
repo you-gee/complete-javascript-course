@@ -7,7 +7,6 @@ import resultsView from './views/resultsView.js';
 import paginationView from './views/paginationView.js';
 import bookmarksView from './views/bookmarksView.js';
 import addRecipeView from './views/addRecipeView.js';
-import previewView from './views/previewView.js';
 import { MODAL_CLOSE_TIME_SEC } from './config.js';
 
 const controlRecipes = async function () {
@@ -76,6 +75,8 @@ const controlAddRecipe = async function (newRecipe) {
     recipeView.render(model.state.recipe);
     addRecipeView.renderMessage();
     setTimeout(() => addRecipeView.toggleWindow(), MODAL_CLOSE_TIME_SEC * 1000);
+    bookmarksView.render(model.state.bookmarks);
+    window.history.pushState(null, '', `#${model.state.recipe.id}`);
   } catch (error) {
     console.error('CUSTOM ERROR: ', error);
     addRecipeView.renderError(error.message);
